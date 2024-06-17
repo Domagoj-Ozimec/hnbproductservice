@@ -36,7 +36,5 @@ public class ExchangeRateService {
         } else {
             return getNewExchangeRateIfNoneExists(currency);
         }
-
-
     }
 }

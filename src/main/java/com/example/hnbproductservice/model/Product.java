@@ -1,5 +1,6 @@
 package com.example.hnbproductservice.model;
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -18,7 +19,6 @@ public class Product {
     @Column(name = "price_eur", nullable = false)
     private BigDecimal priceEur;
 
-    @Column(nullable = false)
     private BigDecimal priceUsd;
 
     @Column(nullable = false)
@@ -27,6 +27,10 @@ public class Product {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getCode() {
@@ -68,4 +72,5 @@ public class Product {
     public void setAvailable(Boolean available) {
         isAvailable = available;
     }
+
 }

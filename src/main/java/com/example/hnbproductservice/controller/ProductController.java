@@ -1,5 +1,6 @@
 package com.example.hnbproductservice.controller;
 
+import com.example.hnbproductservice.exception.DuplicateProductCodeException;
 import com.example.hnbproductservice.model.Product;
 import com.example.hnbproductservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,14 +40,28 @@ public class ProductController {
 
     @GetMapping("/products/new")
     public String showProductForm(Model model) {
-        model.addAttribute("product", new Product());
+        if (!model.containsAttribute("product")) {
+            model.addAttribute("product", new Product());
+        }
         return "product_form";
     }
 
     @PostMapping("/products")
-    public String submitProductForm(@ModelAttribute Product product) {
-        productService.createProduct(product);
-        return "redirect:/api/products/products";
+    public String submitProductForm(@ModelAttribute Product product, RedirectAttributes redirectAttributes) {
+        try {
+            productService.createProduct(product);
+            return "redirect:/api/products";
+        } catch (DuplicateProductCodeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("product", product);
+            return "redirect:/api/products/new";
+        }
+    }
+
+    @ExceptionHandler(DuplicateProductCodeException.class)
+    public String handleDuplicateProductCodeException(DuplicateProductCodeException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/api/products/new";
     }
 
     @GetMapping("/products")

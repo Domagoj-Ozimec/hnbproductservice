@@ -1,6 +1,7 @@
 package com.example.hnbproductservice.service;
 
 
+import com.example.hnbproductservice.exception.DuplicateProductCodeException;
 import com.example.hnbproductservice.model.Product;
 import com.example.hnbproductservice.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,9 @@ public class ProductService {
     private ExchangeRateService exchangeRateService;
 
     public Product createProduct(Product product) {
-        product.setPriceUsd(product.getPriceEur().multiply(BigDecimal.valueOf(exchangeRateService.getExchangeRate("USD"))));
+        if (productRepository.findByCode(product.getCode()).isPresent()) {
+            throw new DuplicateProductCodeException("Product code already exists: " + product.getCode());
+        }
         return productRepository.save(product);
     }
 
@@ -28,7 +31,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id " + id));
         product.setPriceUsd(product.getPriceEur().multiply(BigDecimal.valueOf(exchangeRateService.getExchangeRate("USD"))));
-        productRepository.updateById(product.getId());
+        productRepository.save(product);
         return product;
     }
 
@@ -37,7 +40,7 @@ public class ProductService {
         BigDecimal usdExchangeRate = BigDecimal.valueOf(exchangeRateService.getExchangeRate("USD"));
         for (Product product : products) {
             product.setPriceUsd(product.getPriceEur().multiply(usdExchangeRate).setScale(2, RoundingMode.HALF_UP));
-            productRepository.updateById(product.getId());
+            productRepository.save(product);
         }
         return products;
     }
