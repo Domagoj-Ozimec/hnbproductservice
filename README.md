@@ -37,7 +37,7 @@ This is a simple REST web service built using Spring Boot that manages a list of
 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone [<repository-url>](https://github.com/Domagoj-Ozimec/hnbproductservice.git)
 ```
 
 2. Install PostgreSQL, create and setup a new database with Pg Admin, (productdb default db name)
