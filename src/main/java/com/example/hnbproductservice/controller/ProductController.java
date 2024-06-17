@@ -21,23 +21,42 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    /**
+     * Endpoint to create a new product.
+     * @param product The product object to be created (sent in the request body as JSON).
+     * @return ResponseEntity containing the created product and HTTP status CREATED (201).
+     */
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         Product createdProduct = productService.createProduct(product);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
+    /**
+     * Endpoint to retrieve a product by its ID.
+     * @param id The ID of the product to retrieve.
+     * @return ResponseEntity containing the retrieved product and HTTP status OK (200), or NOT_FOUND (404) if product not found.
+     */
     @GetMapping("/products/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable Long id) {
         Optional<Product> product = Optional.ofNullable(productService.getProductById(id));
         return product.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    /**
+     * Endpoint to retrieve all products.
+     * @return List of all products retrieved from ProductService.
+     */
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
 
+    /**
+     * Endpoint to show a form for creating a new product.
+     * @param model The model object to add attributes needed for rendering the view.
+     * @return View name (product_form) to display the product creation form.
+     */
     @GetMapping("/products/new")
     public String showProductForm(Model model) {
         if (!model.containsAttribute("product")) {
@@ -46,6 +65,12 @@ public class ProductController {
         return "product_form";
     }
 
+    /**
+     * Endpoint to submit a form for creating a new product.
+     * @param product The product object submitted from the form.
+     * @param redirectAttributes Attributes to add flash attributes for redirecting with error messages or data.
+     * @return Redirect to view all products if successful, or redirect back to the product creation form if a DuplicateProductCodeException occurs.
+     */
     @PostMapping("/products")
     public String submitProductForm(@ModelAttribute Product product, RedirectAttributes redirectAttributes) {
         try {
@@ -58,12 +83,24 @@ public class ProductController {
         }
     }
 
+    /**
+     * Exception handler for handling DuplicateProductCodeException.
+     * Redirects back to the product creation form with an error message.
+     * @param ex The DuplicateProductCodeException that was thrown.
+     * @param redirectAttributes Attributes to add flash attributes for redirecting with error messages.
+     * @return Redirect back to the product creation form with an error message.
+     */
     @ExceptionHandler(DuplicateProductCodeException.class)
     public String handleDuplicateProductCodeException(DuplicateProductCodeException ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         return "redirect:/api/products/new";
     }
 
+    /**
+     * Endpoint to view all products.
+     * @param model The model object to add attributes needed for rendering the view.
+     * @return View name (products) to display all products.
+     */
     @GetMapping("/products")
     public String viewProducts(Model model) {
         model.addAttribute("products", productService.getAllProducts());
