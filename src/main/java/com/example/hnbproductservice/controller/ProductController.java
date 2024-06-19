@@ -45,7 +45,7 @@ public class ProductController {
 
     /**
      * Endpoint to retrieve all products.
-     * @return List of all products retrieved from ProductService.
+     * @return List of all products retrieved from ProductServiceImpl.
      */
     @GetMapping
     public List<Product> getAllProducts() {

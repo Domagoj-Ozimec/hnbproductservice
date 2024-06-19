@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import com.example.hnbproductservice.model.ExchangeRateResponse;
 import com.example.hnbproductservice.repository.ExchangeRateRepository;
+import com.example.hnbproductservice.service.impl.ExchangeRateServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class ExchangeRateServiceTest {
 
     @InjectMocks
-    private ExchangeRateService exchangeRateService;
+    private ExchangeRateServiceImpl exchangeRateService;
 
     @Mock
     private ExchangeRateRepository exchangeRateRepository;
